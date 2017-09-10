@@ -15,7 +15,10 @@
  */
 package com.example.android.quakereport;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.LoaderManager;
@@ -102,9 +105,27 @@ public class EarthquakeActivity extends AppCompatActivity
         // Initialize the loader. Pass in the int ID constant defined above and pass in null for
         // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
         // because this activity implements the LoaderCallbacks interface).
-        Log.i(LOG_TAG, "TEST: initLoader");
-        loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);
+        if(!checkInternetConnection()){
+            mProgressBar.setVisibility(View.GONE);
+            mEmptyStateTextView.setText(R.string.no_internet);
+        }
+        else{
+            Log.i(LOG_TAG, "TEST: initLoader");
+            loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);
+        }
 
+    }
+
+    private Boolean checkInternetConnection(){
+        ConnectivityManager cm =
+                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        return isConnected;
     }
 
     @Override
